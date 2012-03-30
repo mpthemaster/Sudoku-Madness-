@@ -33,8 +33,7 @@ namespace WINGRID
             else if (difficulty == "Intermediate")
                 IntermediateGridToDisplay();
             else
-                ExpertGridToDisplay();
-                
+                ExpertGridToDisplay();   
         }
 
         /// <summary>

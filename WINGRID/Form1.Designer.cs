@@ -39,6 +39,7 @@
             this.radEasy = new System.Windows.Forms.RadioButton();
             this.radIntermediate = new System.Windows.Forms.RadioButton();
             this.radExpert = new System.Windows.Forms.RadioButton();
+            this.chkHints = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -160,11 +161,22 @@
             this.radExpert.Text = "Expert";
             this.radExpert.UseVisualStyleBackColor = true;
             // 
+            // chkHints
+            // 
+            this.chkHints.AutoSize = true;
+            this.chkHints.Location = new System.Drawing.Point(12, 248);
+            this.chkHints.Name = "chkHints";
+            this.chkHints.Size = new System.Drawing.Size(88, 17);
+            this.chkHints.TabIndex = 8;
+            this.chkHints.Text = "Hints (on/off)";
+            this.chkHints.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(862, 595);
+            this.Controls.Add(this.chkHints);
             this.Controls.Add(this.radExpert);
             this.Controls.Add(this.radIntermediate);
             this.Controls.Add(this.radEasy);
@@ -194,6 +206,7 @@
         private System.Windows.Forms.RadioButton radEasy;
         private System.Windows.Forms.RadioButton radIntermediate;
         private System.Windows.Forms.RadioButton radExpert;
+        private System.Windows.Forms.CheckBox chkHints;
     }
 }
 
