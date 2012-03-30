@@ -3,7 +3,7 @@
  * Changelist:
  * 
  * 1. Don't forget intermediate and expert difficulties!
- * 2.
+ * 2. Difficulty testing!
 */
 using System;
 namespace WINGRID
@@ -43,7 +43,7 @@ namespace WINGRID
         private void EasyGridToDisplay()
         {
             for (int i = 0; i < grid.GetLength(0); i++)
-                for (int j = randomDisplay.Next(0, 4); j < grid.GetLength(1); j+= randomDisplay.Next(3, 4)) //Change these two random ranges to change the difficulty.
+                for (int j = randomDisplay.Next(0, 4); j < grid.GetLength(1); j+= randomDisplay.Next(1, 4)) //Change these two random ranges to change the difficulty.
                 {
                     sudokuToUserDisplay[i, j] = grid[i, j];
                 }

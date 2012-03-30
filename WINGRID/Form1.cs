@@ -6,6 +6,9 @@
  * 3. Cool numbers flashing across.
  * 4. Sudoku solver! *Try after everything else.
  * 5. Implement Exit game. *
+ * 6. Change Textbx backcolor feature for user.
+ * 6.1 Add color changing support for everything in panel1.
+ * 7. Implement a more advanced difficulty system. (have it make each 3 x 3 grid have a preset number of numbers displayed in random positions)
 */ 
 using System;
 using System.Collections.Generic;
@@ -23,6 +26,8 @@ namespace WINGRID
         public Form1()
         {
             InitializeComponent();
+            CreateTextboxes(); //Creates and stores the 81 textboxes for the form.
+
 
             //Sets tooltips for further description to the user.
             ToolTip radRanGridTip = new ToolTip();
@@ -32,6 +37,67 @@ namespace WINGRID
             radRanGridTip.SetToolTip(radRanGrid, "Generate a random 9 x 9 grid!");
             radNRRGridTip.SetToolTip(radNRRGrid, "Generate a random 9 x 9 grid with no repetitions in a row!");
             radNRCRGridTip.SetToolTip(radNRCRGrid, "Generate a random 9 x 9 grid with no repetitions in a row or column!");
+        }
+
+        TextBox[,] textboxes; //Used for displaying the sudoku and basic grids.
+        /// <summary>
+        /// Generates the textboxes for the form. Needed for Sudoku game (and to display the other basic grids).
+        /// </summary>
+        private void CreateTextboxes()
+        {  //For a 9 x 9 Sudoku.
+            const int AMOUNT = 9; 
+            textboxes = new TextBox[AMOUNT, AMOUNT];
+            Panel[,] panels = new Panel[AMOUNT, AMOUNT]; //For a nicer looking GUI behind the textboxes.
+
+            for (int i = 0; i < textboxes.GetLength(0); i++)
+                for (int j = 0; j < textboxes.GetLength(1); j++)
+                {
+                    panels[i, j] = new Panel();
+
+                    //Sets up the positioning and size of the panels onto the form.
+                    //Checks if the beginning of a 3 by 3 grid's row of the sudoku has been reached and if so, makes the panels sides wider apart.                    
+                    if (j >= 6)
+                        panels[i, j].Left = 6;
+                    else if (j >= 3)
+                        panels[i, j].Left = 3;
+
+                    panels[i, j].Left += 5 + 60 * j; //leftStartingPoint + distanceFromPreviousPanel.
+
+                    //Checks if the beginning of a 3 by 3 grid's row of the sudoku has been reached and if so, makes the panels tops wider apart. 
+                    if (i >= 6)
+                        panels[i, j].Top = 6;
+                    else if (i >= 3)
+                        panels[i, j].Top = 3;
+
+                    panels[i, j].Top += 6 + 62 * i; //topStartingPoint + distanceFromPreviousPanel.
+                    panels[i, j].Width = 57;
+                    panels[i, j].Height = 59;
+                    panels[i, j].Name = "panel " + i + "_" + j;
+                    panels[i, j].BackColor = Color.MistyRose;
+                    panel1.Controls.Add(panels[i, j]);
+
+                    
+                    textboxes[i, j] = new TextBox();
+
+                    //Sets up the positioning and size of the textboxes onto the form.
+                    textboxes[i, j].Left = 3;                                        
+                    textboxes[i, j].Top = 5;                                          
+                    textboxes[i, j].Width = 51;                                         
+                    textboxes[i, j].Height = 49;                                        
+                    textboxes[i, j].Name = "txt " + i + "_" + j;                              
+
+                    //Sets up misc. settings for how the textbox is.
+                    textboxes[i, j].Multiline = true;
+                    textboxes[i, j].MaxLength = 1;
+                    textboxes[i, j].TextAlign = HorizontalAlignment.Center;
+                    textboxes[i, j].Enabled = false;
+                    textboxes[i, j].BackColor = Color.LightPink;
+
+                    Font test = new Font(FontFamily.GenericSansSerif, 29);
+                    textboxes[i, j].Font = test;
+
+                    panels[i, j].Controls.Add(textboxes[i, j]);
+                }
         }
 
         private void btnGenDebug_Click(object sender, EventArgs e)
@@ -63,13 +129,11 @@ namespace WINGRID
         {
             for (int i = 0; i < grid.GetLength(0); i++)
                 for (int j = 0; j < grid.GetLength(1); j++)
-                {                                       //i.e. txt0_0 is a TextBox name. Goes from txt0_0 to txt8_8 . 
-                    TextBox txtbx = this.Controls.Find("txt" + i + "_" + j, true)[0] as TextBox;    //Finds the reference to the TextBox specified
-
+                {     
                     if (grid[i, j] != 0) //If 0, nothing is supposed to be displayed into the textbox, but just incase there is somethinga already in there, it needs to be cleared.
-                        txtbx.Text = grid[i, j].ToString();                                             //and sets the grid value to be displayed in it.
+                        textboxes[i, j].Text = grid[i, j].ToString();                                             //and sets the grid value to be displayed in it.
                     else
-                        txtbx.Text = "";
+                        textboxes[i, j].Text = "";
                 }
         }
 
@@ -90,13 +154,13 @@ namespace WINGRID
         //Draws Graphical lines to visually split up the 9 x 9 grid in the windows form.
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
-            Pen pen = new Pen(Color.LightPink, 4);
+            Pen pen = new Pen(Color.DeepPink, 4);
 
-            e.Graphics.DrawLine(pen, 185, 6, 185, 582); //Left vertical line.
-            e.Graphics.DrawLine(pen, 368, 6, 368, 582); //Right vertical line.
+            e.Graphics.DrawLine(pen, 185, 6, 185, 567); //Left vertical line.
+            e.Graphics.DrawLine(pen, 368, 6, 368, 567); //Right vertical line.
 
-            e.Graphics.DrawLine(pen, 5, 197, 548, 197); //Top horizontal line.
-            e.Graphics.DrawLine(pen, 5, 391, 548, 391); //Bottom horizontal line.
+            e.Graphics.DrawLine(pen, 5, 192, 548, 192); //Top horizontal line.
+            e.Graphics.DrawLine(pen, 5, 381, 548, 381); //Bottom horizontal line.
         }
     }
 }
