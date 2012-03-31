@@ -2,17 +2,18 @@
  * Purpose: A fun sudoku game!
  * Ideas: 
  * 
- * 2. Hint System - Show correct squares and show incorrect squares.
  * 3. Cool numbers flashing across.
  * 4. Sudoku solver! *Try after everything else.
  * 5. Implement Exit game. *
- * 6. Change Textbx backcolor feature for user.
+ * 6. Change Textbox backcolor feature for user.
  * 6.1 Add color changing support for everything in panel1.
- * 7. Implement a more advanced difficulty system. (have it make each 3 x 3 grid have a preset number of numbers displayed in random positions)
+ * 7.*Might not be necessary* Implement a more advanced difficulty system. (have it make each 3 x 3 grid have a preset number of numbers displayed in random positions)
  * 8. Rename method names to distinguish between private and public.
- * 9. Hint System - add support to display an addition number to the grid.
+ * 9. Hint System - add support to display as many free numbers to the grid as the user wants.
  * 10. Add scoring system.
  * 11. Make GUI nicer.
+ * 12. Hint system - add support to bring a textbox to the user's attention that has an easy number put in. (i.e. the number HAS to be 5).
+ * 13. Based on the user's numbers, display numbers that they have finished using. (i.e. they use nine 5s).
 */ 
 using System;
 using System.Drawing;
@@ -98,13 +99,16 @@ namespace WINGRID
                     textboxes[i, j].Font = test;
 
                     textboxes[i, j].KeyPress += new KeyPressEventHandler(NumbersOnly_KeyPress); //Stops crap from being entered.
-                    textboxes[i, j].KeyUp += new KeyEventHandler(Textboxes_KeyUp); //Checks if the user is done playing, if they sucessfully completed the sudoku, and also utilizes the hint system.
+                    textboxes[i, j].TextChanged += new EventHandler(Textboxes_TextChanged); //Checks if the user is done playing, if they sucessfully completed the sudoku, and also utilizes the hint system.
                     panels[i, j].Controls.Add(textboxes[i, j]);
                 }
         }
 
+        private bool sudokuGridGenerated; //Keeps track of whether or not a sudoku grid has been generated. If not, certain features are ignored.
         private void btnGenDebug_Click(object sender, EventArgs e)
         {
+            sudokuGridGenerated = false;
+
             //Generates the simple grid specified by the user.
             if (radRanGrid.Checked)
             {
@@ -135,7 +139,7 @@ namespace WINGRID
                 {
                     if (grid[i, j] != 0) //If 0, nothing is supposed to be displayed into the textbox, but just incase there is somethinga already in there, it needs to be cleared.
                     {
-                        textboxes[i, j].Text = grid[i, j].ToString();                                             //and sets the grid value to be displayed in it.
+                        textboxes[i, j].Text = grid[i, j].ToString();              //and sets the grid value to be displayed in it.
                         textboxes[i, j].Enabled = false;
                     }
                     else
@@ -149,6 +153,8 @@ namespace WINGRID
         private SudokuGrid sudokuGrid;
         private void btnPlaySudoku_Click(object sender, EventArgs e)
         {
+            sudokuGridGenerated = true;
+
             //Generates the sudoku with the difficulty set.
             if (radEasy.Checked)
                 sudokuGrid = new SudokuGrid("Easy");
@@ -159,7 +165,7 @@ namespace WINGRID
 
             DisplayGrid(sudokuGrid.SudokuToUserDisplay);
 
-            AutoFillGrid(); //**********************************************REMOVE***************************
+            //AutoFillGrid(); //For testing purposes.
         }
 
         //Draws Graphical lines to visually split up the 9 x 9 grid in the windows form.
@@ -187,17 +193,32 @@ namespace WINGRID
         /// <summary>
         /// Checks if the user has finished playing, and if so, checks if the user won and displays a corresponding message.
         /// </summary>
-        private void Textboxes_KeyUp(object sender, KeyEventArgs e)         //<======================================================MUST FINISH IMPLEMENTING*****************************
+        private void Textboxes_TextChanged(object sender, EventArgs e)         //<======================================================MUST FINISH IMPLEMENTING*****************************
         {
-            if (DonePlaying())
-                if (CheckIfCorrect())
-                {
-                    if (MessageBox.Show("Congratulations! You've succesfully completed this Sudoku challenge! Play again with the same difficulty?", "Yay!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
-                        btnPlaySudoku_Click(null, null);
-                }
-                else
-                    if (MessageBox.Show("You have unsucessfully completed the Sudoku. Would you like all incorrect answers to be removed?", "Sorry...", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
-                        throw new NotImplementedException();
+            if (sudokuGridGenerated) //Don't want any of this to happen unless a sudoku grid has been generated.
+            {
+                if (chkHints.Checked) //If the user pressed a number key and wants hints...Make correct input green and wrong input red.
+                    HintChecker(sender as TextBox);
+                else //Set text color to black.
+                    (sender as TextBox).ForeColor = Color.Black;
+
+                if (DonePlaying())
+                    if (CheckIfCorrect())
+                    {
+                        //If the user wants to play again at the same difficulty, do it!
+                        if (MessageBox.Show("Congratulations! You've succesfully completed this Sudoku challenge! Play again with the same difficulty?", "Yay!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                            btnPlaySudoku_Click(null, null);
+                    }
+                    else //If the user wants to see what is wrong, do it!
+                        if (MessageBox.Show("You have unsucessfully completed the Sudoku. Would you like all incorrect answers to be marked?", "Sorry...", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                            for (int i = 0; i < textboxes.GetLength(0); i++)
+                                for (int j = 0; j < textboxes.GetLength(1); j++)
+                                {
+                                    HintChecker(textboxes[i, j]);
+                                }
+            }
+            else
+                (sender as TextBox).ForeColor = Color.Black; //Sets the text color back to black incase the hint system was used.
         }
 
         /// <summary>
@@ -234,6 +255,29 @@ namespace WINGRID
             for (int i = 0; i < textboxes.GetLength(0); i++)
                 for (int j = 0; j < textboxes.GetLength(1); j++)
                     textboxes[i, j].Text = sudokuGrid.Grid[i, j].ToString();
+        }
+
+        /// <summary>
+        /// Part of Hint System - Checks if a textbox with text entered into it is correct (green) or wrong (red).
+        /// </summary>
+        private void HintChecker(TextBox textbox)
+        {
+            //Gets the corresponding sudoku grid index numbers from the textbox's name.
+            string[] indexes = textbox.Name.Remove(0, 4).Split('_');
+            int indexOne = int.Parse(indexes[0]), indexTwo = int.Parse(indexes[1]);
+            
+            //Mark the user's input as either green (correct) or red (wrong).
+            if (textbox.Text == sudokuGrid.Grid[indexOne, indexTwo].ToString())
+                textbox.ForeColor = Color.Green;
+            else
+                textbox.ForeColor = Color.Red;
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            //Makes sure the user wants to exit and if the user is, do it!
+            if (MessageBox.Show("Are you sure you want to exit?", "Exit?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                Application.Exit();
         }
     }
 }

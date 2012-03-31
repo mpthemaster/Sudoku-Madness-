@@ -40,6 +40,7 @@
             this.radIntermediate = new System.Windows.Forms.RadioButton();
             this.radExpert = new System.Windows.Forms.RadioButton();
             this.chkHints = new System.Windows.Forms.CheckBox();
+            this.btnExit = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -113,6 +114,9 @@
             // 
             // panel1
             // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.panel1.Location = new System.Drawing.Point(298, 12);
             this.panel1.Name = "panel1";
@@ -171,11 +175,22 @@
             this.chkHints.Text = "Hints (on/off)";
             this.chkHints.UseVisualStyleBackColor = true;
             // 
+            // btnExit
+            // 
+            this.btnExit.Location = new System.Drawing.Point(12, 560);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(75, 23);
+            this.btnExit.TabIndex = 9;
+            this.btnExit.Text = "Exit";
+            this.btnExit.UseVisualStyleBackColor = true;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(862, 595);
+            this.Controls.Add(this.btnExit);
             this.Controls.Add(this.chkHints);
             this.Controls.Add(this.radExpert);
             this.Controls.Add(this.radIntermediate);
@@ -184,6 +199,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnPlaySudoku);
             this.Controls.Add(this.groupBox1);
+            this.MinimumSize = new System.Drawing.Size(878, 631);
             this.Name = "Form1";
             this.Text = "Welcome to Sudoku MADNESS!";
             this.groupBox1.ResumeLayout(false);
@@ -207,6 +223,7 @@
         private System.Windows.Forms.RadioButton radIntermediate;
         private System.Windows.Forms.RadioButton radExpert;
         private System.Windows.Forms.CheckBox chkHints;
+        private System.Windows.Forms.Button btnExit;
     }
 }
 
